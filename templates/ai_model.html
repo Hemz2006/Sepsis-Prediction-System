@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}AI Model - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold" style="color: #000000;">AI Model</h1>
+        <p class="text-gray-600 mt-2">Overview of the AI-powered sepsis prediction system</p>
+    </div>
+
+    <!-- Main Card (fixed structure: single form, padding similar to SOFA) -->
+    <div class="bg-white rounded-2xl shadow-lg border card-accent p-8">
+        <form method="POST" action="{{ url_for('ai_model') }}" class="space-y-8">
+
+<div class="px-0 py-0">
+
+    <!-- Vital Signs -->
+    <div>
+        <h3 class="text-lg font-semibold mb-4" style="color: #9F00FF;">Vital Signs</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {% set vitals = [
+                ('heart_rate','Heart Rate (bpm)'),
+                ('o2_saturation','O2 Saturation (%)'),
+                ('temperature','Temperature (°C)'),
+                ('systolic_bp','Systolic BP (mmHg)'),
+                ('map','Mean Arterial Pressure (mmHg)'),
+                ('diastolic_bp','Diastolic BP (mmHg)'),
+                ('respiratory_rate','Respiration Rate'),
+                ('etco2','EtCO2 (mmHg)'),
+                ('hco3','HCO3 (mEq/L)'),
+                ('fio2','FiO2 (%)'),
+                ('ph','pH'),
+                ('paco2','PaCO2 (mmHg)'),
+                ('sao2','SaO2 (%)')
+            ] %}
+
+            {% for id,label in vitals %}
+            <div>
+                <label for="{{ id }}" class="block text-sm font-medium text-[#000000] mb-2">{{ label }}</label>
+                <input id="{{ id }}" name="{{ id }}" type="number" step="any" data-ai-input
+                       class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000] sm:text-sm" />
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+   <!-- Laboratory Values -->
+<div>
+    <h3 class="text-lg font-semibold mb-4">Laboratory Values</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {% set LAB_FIELDS = {
+            'bun': 'BUN (mg/dL)',
+            'creatinine': 'Creatinine (mg/dL)',
+            'lactate': 'Lactate (mmol/L)',
+            'potassium': 'Potassium (mEq/L)',
+            'hemoglobin': 'Hemoglobin (g/dL)',
+            'fibrinogen': 'Fibrinogen (mg/dL)',
+            'calcium': 'Calcium (mg/dL)',
+            'bilirubin_direct': 'Direct Bilirubin (mg/dL)',
+            'magnesium': 'Magnesium (mg/dL)',
+            'troponini': 'Troponin I (ng/mL)',
+            'ptt': 'PTT (seconds)',
+            'platelets': 'Platelets (×10³/µL)',
+            'chloride': 'Chloride (mEq/L)',
+            'glucose': 'Glucose (mg/dL)',
+            'phosphate': 'Phosphate (mg/dL)',
+            'hct': 'Hematocrit (%)',
+            'wbc': 'WBC (×10³/µL)'
+        } %}
+
+        {% for f, label in LAB_FIELDS.items() %}
+        <div>
+            <label for="{{ f }}" class="block text-sm font-medium text-[#000000] mb-2">
+                {{ label }}
+            </label>
+            <input
+                id="{{ f }}"
+                name="{{ f }}"
+                type="number"
+                step="any"
+                data-ai-input="true"
+                placeholder="{% if f == 'fibrinogen' %}300{% elif f == 'lactate' %}1.2{% elif f == 'wbc' %}8.0{% else %}{% endif %}"
+                class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000] sm:text-sm"
+            />
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+
+    <!-- Model Output -->
+<div>
+    <h3 class="text-lg font-semibold mb-4" style="color:#9F00FF;">Model Output</h3>
+
+    <div class="border rounded-md p-4">
+
+        <p>
+            <strong>Risk Score:</strong>
+            {{ '%.3f'|format(probability) if probability is not none else '—' }}
+        </p>
+
+        <p class="mt-2">
+            <strong>Risk Category:</strong>
+
+            {% if result == 'Sepsis Likely' %}
+                <span class="px-3 py-1 rounded-full text-white bg-red-500">
+                    Sepsis Likely
+                </span>
+            {% elif result %}
+                <span class="px-3 py-1 rounded-full text-white bg-green-500">
+                    Sepsis Unlikely
+                </span>
+            {% else %}
+                <span class="px-3 py-1 rounded-full text-white bg-gray-400">
+                    —
+                </span>
+            {% endif %}
+        </p>
+
+        <!-- ✅ ADD THIS PART -->
+        {% if sepsis_drivers %}
+        <div class="mt-4 bg-red-50 border-l-4 border-red-400 p-4">
+            <h4 class="font-semibold text-red-700 mb-2">
+                Factors Contributing to Sepsis Risk
+            </h4>
+            <ul class="list-disc ml-5 text-sm text-red-700">
+                {% for factor in sepsis_drivers %}
+                    <li>{{ factor }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+    <!-- Patient Demographics -->
+    <div>
+        <h3 class="text-lg font-semibold mb-4">Patient Demographics</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-[#000000]">Age</label>
+                <input type="text" readonly value="45"
+                       class="mt-1 block w-full border border-[#000000]/20 px-3 py-2 rounded-md shadow-sm sm:text-sm" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-[#000000]">Gender</label>
+                <input type="text" readonly value="Female"
+                       class="mt-1 block w-full border border-[#000000]/20 px-3 py-2 rounded-md shadow-sm sm:text-sm" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+        <p class="text-sm text-yellow-700">
+            <strong>Important:</strong>
+            This AI-powered sepsis risk score must be interpreted alongside
+            clinical judgment and standard diagnostic tools.
+        </p>
+    </div>
+
+</div>
+
+<!-- Bottom Action Bar -->
+<div class="sticky bottom-0 z-20 bg-white border-t p-4 flex justify-end gap-3">
+    <a href="#" onclick="history.back(); return false;" class="btn-ghost px-4 py-2">Cancel</a>
+    <button type="submit" class="btn-primary px-6 py-2">Analyze</button>
+</div>
+
+</form>
+    </div>
+
+<script>
+(function () {
+    const STORAGE_KEY = 'ai_model_inputs_v1';
+
+    function collectInputs() {
+        const data = {};
+        document.querySelectorAll('input[data-ai-input]').forEach(el => {
+            data[el.id] = el.value === '' ? null : el.value;
+        });
+        return data;
+    }
+
+    function restoreInputs() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const data = JSON.parse(raw);
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el && data[id] !== null) el.value = data[id];
+            });
+        } catch (e) {
+            console.warn('Failed to restore AI inputs', e);
+        }
+    }
+
+    function persistInputs() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(collectInputs()));
+        } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', restoreInputs);
+    document.addEventListener('input', persistInputs);
+})();
+</script>
+
+{% endblock %}

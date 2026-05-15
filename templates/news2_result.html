@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWS2 Test Result - {{ patient.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NEWS2 Test Result for {{ patient.name }}</h1>
+        <p><strong>Patient Age:</strong> {{ patient.age }} | <strong>Gender:</strong> {{ patient.gender }}</p>
+        
+        <h2>Input Parameters</h2>
+        <ul>
+            <li><strong>Respiratory Rate:</strong> {{ respiratory_rate }} breaths/min</li>
+            <li><strong>SpO2_Scale_1:</strong> {{ SpO2_Scale_1 }}%</li>
+            <li><strong>SpO2_Scale_2:</strong> {{ SpO2_Scale_2 }}%</li>
+            <li><strong>Supplemental Oxygen:</strong> {% if supplemental_oxygen %}Yes{% else %}No{% endif %}</li>
+            <li><strong>Systolic Blood Pressure:</strong> {{ systolic_bp }} mmHg</li>
+            <li><strong>Heart Rate:</strong> {{ heart_rate }} bpm</li>
+            <li><strong>Level of Consciousness:</strong> {{ level_of_consciousness }}</li>
+            <li><strong>Temperature:</strong> {{ temperature }} °C</li>
+        </ul>
+        
+        <h2>NEWS2 Calculation Results</h2>
+        <ul>
+            <li><strong>Total Score:</strong> {{ result.total_score }}</li>
+            <li><strong>Risk Band:</strong> {{ result.risk_band }}</li>
+            <li><strong>Recommended Response:</strong> {{ result.recommended_response }}</li>
+        </ul>
+        
+        <!-- Conditional display for Low and Medium risks -->
+        {% if result.risk_band == 'Low' %}
+            <div class="alert alert-info">
+                <strong>Low Risk:</strong> Patient is at low risk. Continue standard monitoring.
+            </div>
+        {% elif result.risk_band == 'Medium' %}
+            <div class="alert alert-warning">
+                <strong>Near High Risk (Medium):</strong> Patient is approaching high risk. Escalate monitoring and consider further assessment.
+            </div>
+        {% elif result.risk_band == 'High' %}
+            <div class="alert alert-danger">
+                <strong>High Risk:</strong> Immediate escalation required. Contact senior clinician.
+            </div>
+        {% endif %}
+        
+        <p><a href="{{ url_for('patient_detail', patient_id=patient.id) }}">Back to Patient Details</a></p>
+    </div>
+</body>
+</html>

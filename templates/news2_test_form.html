@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}NEWS2 Test - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-[#000000]">NEWS2 Assessment for {{ patient.name }}</h1>
+        <p class="text-lg text-[#000000]/80">Enter the latest physiological parameters to calculate the **National Early Warning Score 2 (NEWS2)**.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-[#000000]/10 p-8">
+        <form method="POST" class="space-y-6">
+            
+            <input type="hidden" name="patient_id" value="{{ patient.id }}">
+
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <!-- Age -->
+<div>
+    <label for="Age" class="block text-sm font-medium text-[#000000] mb-1">
+        Patient Age (years) <span class="text-red-500">*</span>
+    </label>
+    <input
+        type="number"
+        step="1"
+        min="0"
+        id="Age"
+        name="Age"
+        required
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20"
+        placeholder="e.g., 45"
+        
+    >
+</div>
+
+                <!-- 1. Respiratory Rate -->
+                <div>
+                    <label for="respiratory_rate" class="block text-sm font-medium text-[#000000] mb-1">1. Respiratory Rate (breaths/min) <span class="text-red-500">*</span></label>
+                    <input type="number" step="1" min="1" id="respiratory_rate" name="respiratory_rate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 18">
+                </div>
+
+                <!-- 2. Heart Rate -->
+                <div>
+                    <label for="heart_rate" class="block text-sm font-medium text-[#000000] mb-1">2. Heart Rate (beats/min) <span class="text-red-500">*</span></label>
+                    <input type="number" step="1" min="10" id="heart_rate" name="heart_rate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 72">
+                </div>
+                
+                <!-- 3. Systolic BP -->
+                <div>
+                    <label for="systolic_bp" class="block text-sm font-medium text-[#000000] mb-1">3. Systolic BP (mmHg) <span class="text-red-500">*</span></label>
+                    <input type="number" step="1" min="30" id="systolic_bp" name="systolic_bp" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 130">
+                </div>
+                
+                <!-- 4. Temperature -->
+                <div>
+                    <label for="temperature" class="block text-sm font-medium text-[#000000] mb-1">4. Temperature (°C) <span class="text-red-500">*</span></label>
+                    <input type="number" step="0.1" min="32.0" max="43.0" id="temperature" name="temperature" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 36.8">
+                </div>
+                
+                <!-- 5. SpO2_Scale_1 -->
+                <div>
+                    <label for="SpO2_Scale_1" class="block text-sm font-medium text-[#000000] mb-1">5. SpO2_Scale_1 (%) <span class="text-red-500">*</span></label>
+                    <input type="number" step="1" min="50" max="100" id="SpO2_Scale_1" name="SpO2_Scale_1" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 96">
+                </div>
+
+                <!-- 6. SpO2_Scale_2 -->
+                <div>
+                    <label for="SpO2_Scale_2" class="block text-sm font-medium text-[#000000] mb-1">6. SpO2_Scale_2 (%) <span class="text-red-500">*</span></label>
+                    <input type="number" step="1" min="50" max="100" id="SpO2_Scale_2" name="SpO2_Scale_2" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20" placeholder="e.g., 96">
+                </div>
+                
+                <!-- 7. Level of Consciousness (AVPU Scale) -->
+                <div>
+                    <label for="level_of_consciousness" class="block text-sm font-medium text-[#000000] mb-1">7. Level of Consciousness (AVPU) <span class="text-red-500">*</span></label>
+                    <select id="level_of_consciousness" name="level_of_consciousness" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-[#000000] focus:ring focus:ring-[#000000]/20">
+                        <option value="Alert">A - Alert (Score 0)</option>
+                        <option value="Unresponsive">U - Unresponsive (Score 3)</option>
+                    </select>
+                </div>
+                
+                <!-- 8. Supplemental Oxygen (SpO2 Scale 2 Factor) -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-[#000000] mb-2">7. Supplemental Oxygen Usage</label>
+                    <div class="flex items-center space-x-4 p-3 bg-[#f8f9fa] rounded-lg border border-[#000000]/10">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="supplemental_oxygen" id="supplemental_oxygen" class="form-checkbox h-5 w-5 text-[#000000] rounded focus:ring-[#000000]" value="on">
+                            <span class="ml-2 text-[#000000]/80 font-medium">Is the patient currently on supplemental oxygen?</span>
+                        </label>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-6 text-center">
+                <button type="submit" class="btn-primary inline-flex items-center px-8 py-3 shadow-lg">
+                    <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    Calculate NEWS2 Score
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

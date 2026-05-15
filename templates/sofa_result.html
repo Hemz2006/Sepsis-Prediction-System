@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}SOFA Results - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-[#000000] mb-4">SOFA Results</h1>
+        <p class="text-lg text-[#000000]/80">Sequential Organ Failure Assessment Results</p>
+    </div>
+
+    <!-- Main Results -->
+    <div class="bg-white rounded-2xl shadow-lg border border-[#000000]/10 p-8 mb-8">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full text-4xl font-bold text-white
+                {% if result.total_sofa >= 12 %}bg-red-600{% elif result.total_sofa >= 6 %}bg-orange-500{% elif result.total_sofa >= 2 %}bg-yellow-500{% else %}bg-green-500{% endif %}">
+                {{ result.total_sofa }}
+            </div>
+            <h2 class="text-3xl font-bold text-[#000000] mt-4">Total SOFA Score: {{ result.total_sofa }}</h2>
+            {% if result.delta_sofa > 0 %}
+            <p class="text-xl text-[#000000]/80">Delta SOFA: +{{ result.delta_sofa }}</p>
+            {% endif %}
+            <div class="mt-4">
+                <span class="inline-flex items-center px-4 py-2 rounded-full text-lg font-semibold
+                    {% if result.sepsis_criteria_met %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                    {% if result.sepsis_criteria_met %}SEPSIS CRITERIA MET{% else %}No Sepsis Criteria{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Individual Scores -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-[#000000] mb-4">Individual Organ System Scores:</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">Respiratory</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.respiration }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">PaO2/FiO2: {{ pao2_fio2 }} mmHg</p>
+                </div>
+
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">Coagulation</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.coagulation }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">Platelets: {{ platelets }} ×10³/μL</p>
+                </div>
+
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">Liver</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.liver }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">Bilirubin: {{ bilirubin }} mg/dL</p>
+                </div>
+
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">Cardiovascular</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.cardiovascular }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">MAP: {{ map_mmhg }} mmHg</p>
+                </div>
+
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">CNS</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.cns }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">GCS: {{ gcs }}</p>
+                </div>
+
+                <div class="bg-[#f8f9fa] rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-[#000000]">Renal</span>
+                        <span class="text-2xl font-bold text-[#000000]">{{ result.individual_scores.renal }}</span>
+                    </div>
+                    <p class="text-sm text-[#000000]/60">Creatinine: {{ creatinine }} mg/dL</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Interpretation -->
+        <div class="bg-[#f8f9fa] rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-[#000000] mb-3">Clinical Interpretation:</h3>
+            <p class="text-[#000000] mb-4">{{ result.interpretation }}</p>
+            
+            {% if result.estimated_mortality_risk_percent %}
+            <div class="border-t border-[#000000]/20 pt-4">
+                <p class="text-sm text-[#000000]/80">
+                    <strong>Estimated Mortality Risk:</strong> ~{{ result.estimated_mortality_risk_percent }}%
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sepsis Criteria Details -->
+        {% if result.sepsis_criteria_met %}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-red-800 mb-2">⚠️ Sepsis Criteria Met</h3>
+            <p class="text-red-700">
+                Acute increase in SOFA score ≥2 points indicates sepsis according to Sepsis-3 definition.
+                This patient requires immediate evaluation and treatment for sepsis.
+            </p>
+        </div>
+        {% else %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-green-800 mb-2">✓ No Sepsis Criteria</h3>
+            <p class="text-green-700">
+                Current SOFA score does not meet sepsis criteria. Continue monitoring and reassess if clinical condition changes.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center">
+        <a href="{{ url_for('sofa_calculator') }}" 
+           class="inline-flex items-center px-6 py-3 border border-[#000000] text-base font-medium rounded-md text-[#000000] bg-white hover:bg-[#f8f9fa] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#000000]">
+            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Calculate Again
+        </a>
+        
+        <a href="{{ url_for('septic_shock_calculator') }}" class="btn-primary inline-flex items-center px-6 py-3">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            Assess Septic Shock
+        </a>
+    </div>
+
+    <div class="mt-6 flex justify-center gap-4">
+        <a href="{{ url_for('dashboard') }}" class="nav-link inline-flex items-center px-6 py-3">
+            Back to Dashboard
+        </a>
+        <button class="btn-primary inline-flex items-center px-6 py-3">
+            Recalculate
+        </button>
+    </div>
+</div>
+{% endblock %}

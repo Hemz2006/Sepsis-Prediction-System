@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}About - Sepsis Prediction Simulator{% endblock %}
+{% block content %}
+{# 
+Royal Violet: #000000 (main), #2A004D (darker), #5F00B2 (old dark), #A259FF (light accent)
+#}
+<div class="max-w-6xl mx-auto py-12 px-4">
+    <div class="text-center mb-16 hero-spot">
+        <h1 class="text-6xl md:text-7xl font-extrabold mb-6 text-[#000000]" style="letter-spacing: -1px;">
+            About Sepsis Prediction Simulator
+        </h1>
+        <p class="text-2xl text-[#000000] bg-white inline-block px-8 py-3 rounded-2xl" style="box-shadow: 0 4px 12px 0 rgba(0,0,0,0.1);">
+            Advanced AI-powered tool for healthcare professionals
+        </p>
+    </div>
+
+    <!-- Mission Statement -->
+    <div class="bg-white p-12 rounded-3xl mb-16 shadow border card-accent" style="box-shadow: 0 4px 16px 0 rgba(0,0,0,0.1); border-color: var(--card-border);">
+        <h2 class="text-4xl font-extrabold mb-6 text-[#000000]" style="letter-spacing: -0.5px;">
+            Our Mission
+        </h2>
+        <p class="text-[#000000] text-lg leading-relaxed">
+            The Sepsis Prediction Simulator is designed to assist healthcare professionals in early detection of sepsis risk through advanced machine learning algorithms. Our goal is to provide a reliable, user-friendly tool that can help improve patient outcomes by identifying potential sepsis cases early in their development.
+        </p>
+    </div>
+
+    <!-- Technology & Methodology -->
+    <div class="mb-20">
+        <h2 class="text-4xl font-extrabold mb-10 text-center text-[#000000]" style="letter-spacing: -0.5px;">
+            Technology & Methodology
+        </h2>
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="bg-white p-10 rounded-3xl shadow border flex flex-col items-center card-accent" style="box-shadow: 0 4px 16px 0 rgba(0,0,0,0.1); border-color: var(--card-border);">
+                <div class="mb-4">
+                    <!-- AI/ML Logo -->
+                    <div class="w-14 h-14 icon-bg-2 rounded-full flex items-center justify-center">
+                        <svg class="h-8 w-8 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8M12 8v8" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-[#000000]">Machine Learning Model</h3>
+                <ul class="text-[#000000] text-lg space-y-3">
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> CNN-LSTM hybrid neural network
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Trained on clinical sepsis data
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> 24-hour time window analysis
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Real-time prediction capabilities
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white p-10 rounded-3xl shadow border flex flex-col items-center card-accent" style="box-shadow: 0 4px 16px 0 rgba(0,0,0,0.1); border-color: var(--card-border);">
+                <div class="mb-4">
+                    <!-- Data/Chart Logo -->
+                    <div class="w-14 h-14 icon-bg-3 rounded-full flex items-center justify-center">
+                        <svg class="h-8 w-8 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="3" y="12" width="4" height="8" rx="1" stroke-width="2"/>
+                            <rect x="9" y="8" width="4" height="12" rx="1" stroke-width="2"/>
+                            <rect x="15" y="4" width="4" height="16" rx="1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-[#000000]">Data Features</h3>
+                <ul class="text-[#000000] text-lg space-y-3">
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Vital signs (temperature, blood pressure, etc.)
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Laboratory values (WBC, lactate, creatinine)
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Respiratory parameters
+                    </li>
+                    <li class="flex items-center">
+                        <span class="mr-2">•</span> Hemodynamic measurements
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="mb-20">
+        <h2 class="text-4xl font-extrabold mb-10 text-center text-[#000000]" style="letter-spacing: -0.5px;">
+            Key Features
+        </h2>
+        <div class="grid md:grid-cols-3 gap-12">
+            <div class="bg-white p-10 rounded-3xl shadow border flex flex-col items-center card-accent" style="box-shadow: 0 4px 16px 0 #00000033; border-color: var(--card-border);">
+                <div class="mb-4">
+                    <div class="w-12 h-12 icon-bg-1 rounded-full flex items-center justify-center">
+                        <svg class="h-6 w-6 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="font-semibold text-xl mb-3 text-[#000000]">Secure Authentication</h3>
+                <p class="text-[#000000]/80 text-base text-center">Email-based registration with verification for healthcare professionals only</p>
+            </div>
+            <div class="bg-white p-10 rounded-3xl shadow border flex flex-col items-center card-accent" style="box-shadow: 0 4px 16px 0 #00000033; border-color: var(--card-border);">
+                <div class="mb-4">
+                    <div class="w-12 h-12 icon-bg-2 rounded-full flex items-center justify-center">
+                        <svg class="h-6 w-6 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="font-semibold text-xl mb-3 text-[#000000]">Patient Management</h3>
+                <p class="text-[#000000]/80 text-base text-center">Comprehensive patient tracking with historical data analysis</p>
+            </div>
+            <div class="bg-white p-10 rounded-3xl shadow border flex flex-col items-center card-accent" style="box-shadow: 0 4px 16px 0 #00000033; border-color: var(--card-border);">
+                <div class="mb-4">
+                    <div class="w-12 h-12 icon-bg-3 rounded-full flex items-center justify-center">
+                        <svg class="h-6 w-6 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="font-semibold text-xl mb-3 text-[#000000]">Interactive Charts</h3>
+                <p class="text-[#000000]/80 text-base text-center">Visual trend analysis with real-time data visualization</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="text-center mt-20">
+        <h2 class="text-4xl font-extrabold mb-8 text-[#000000]" style="letter-spacing: -0.5px;">
+            Contact & Support
+        </h2>
+        <p class="text-[#000000]/80 mb-8 text-lg">
+            For technical support, feature requests, or questions about the application, please contact our development team.
+        </p>
+        <div class="bg-white p-8 rounded-3xl shadow inline-block border card-accent" style="box-shadow: 0 4px 16px 0 rgba(0,0,0,0.1); border-color: var(--card-border);">
+            <p class="text-base" style="color: #000000;">
+                <strong>Version:</strong> 1.0.0<br>
+                <strong>Last Updated:</strong> December 2024<br>
+                <strong>Model Type:</strong> CNN-LSTM Hybrid<br>
+                <strong>Training Data:</strong> Clinical Sepsis Dataset
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

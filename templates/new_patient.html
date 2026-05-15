@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Add Patient - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-10">
+    <div class="mb-8 text-center">
+        <h1 class="text-4xl font-extrabold mb-2" style="letter-spacing: -1px;">
+            Add New Patient
+        </h1>
+        <p class="text-lg text-[#666666] bg-white/80 inline-block px-6 py-2 rounded-xl shadow" style="box-shadow: 0 2px 8px 0 #00000022;">
+            Enter patient information to begin monitoring
+        </p>
+    </div>
+
+    <div class="bg-white shadow-2xl rounded-3xl border card-accent" style="box-shadow: 0 8px 32px 0 #00000033; border-color:var(--card-border);">
+        <div class="px-8 py-10">
+            <form method="POST">
+                <div class="grid grid-cols-1 gap-y-8 gap-x-8 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label for="name" class="block text-base font-semibold mb-1">Full Name</label>
+                        <div>
+                            <input type="text" name="name" id="name" required
+                                   class="shadow-sm focus:ring var(--brand) focus:border var(--brand) block w-full text-lg border-[#666666]/30 rounded-xl bg-white/90 text-[#000000] placeholder-[#666666]/60 py-3 px-4"
+                                   placeholder="Enter patient's full name">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="age" class="block text-base font-semibold mb-1">Age</label>
+                        <div>
+                            <input type="number" name="age" id="age" required min="0" max="150"
+                                   class="shadow-sm focus:ring var(--brand) focus:border var(--brand) block w-full text-lg border-[#666666]/30 rounded-xl bg-white/90 text-[#000000] placeholder-[#666666]/60 py-3 px-4"
+                                   placeholder="Age in years">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="gender" class="block text-base font-semibold mb-1">Gender</label>
+                        <div>
+                            <select name="gender" id="gender" required
+                                    class="shadow-sm focus:ring var(--brand) focus:border var(--brand) block w-full text-lg border-[#666666]/30 rounded-xl bg-white/90 text-[#000000] py-3 px-4">
+                                <option value="">Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 flex items-center justify-end space-x-4">
+                    <a href="{{ url_for('dashboard') }}" 
+                       class="btn-ghost py-2.5 px-6 rounded-xl shadow text-base font-semibold">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Add Patient
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

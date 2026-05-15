@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Septic Shock Calculator - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-[#000000] mb-4">Septic Shock Calculator</h1>
+        <p class="text-lg text-[#000000]/80">Assessment for septic shock based on Sepsis-3 criteria</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-[#000000]/10 p-8">
+        <form method="POST" class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Mean Arterial Pressure -->
+                <div>
+                    <label for="map_mmhg" class="block text-sm font-medium text-[#000000] mb-2">
+                        Mean Arterial Pressure (mmHg)
+                    </label>
+                    <input type="number" id="map_mmhg" name="map_mmhg" 
+                           value="{{ request.form.get('map_mmhg', '70') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                           required>
+                    <p class="text-xs text-[#000000]/60 mt-1">Target: ≥65 mmHg despite vasopressor support</p>
+                </div>
+
+                <!-- Lactate Level -->
+                <div>
+                    <label for="lactate" class="block text-sm font-medium text-[#000000] mb-2">
+                        Lactate Level (mmol/L)
+                    </label>
+                    <input type="number" id="lactate" name="lactate" step="0.1"
+                           value="{{ request.form.get('lactate', '1.0') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                           required>
+                    <p class="text-xs text-[#000000]/60 mt-1">>2.0 mmol/L indicates hyperlactatemia</p>
+                </div>
+
+                <!-- On Vasopressors -->
+                <div>
+                    <label class="block text-sm font-medium text-[#000000] mb-2">
+                        Currently on Vasopressors
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="on_vasopressors" value="yes" 
+                                   class="mr-2" {% if request.form.get('on_vasopressors') == 'yes' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">Yes</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="on_vasopressors" value="no" 
+                                   class="mr-2" {% if request.form.get('on_vasopressors') == 'no' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Adequate Volume Resuscitation -->
+                <div>
+                    <label class="block text-sm font-medium text-[#000000] mb-2">
+                        Adequate Volume Resuscitation
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="adequate_volume_resus" value="yes" 
+                                   class="mr-2" {% if request.form.get('adequate_volume_resus') == 'yes' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">Yes (≥30 mL/kg crystalloid)</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="adequate_volume_resus" value="no" 
+                                   class="mr-2" {% if request.form.get('adequate_volume_resus') == 'no' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sepsis Present -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-[#000000] mb-2">
+                        Sepsis Present (SOFA ≥2 or clinical suspicion)
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="sepsis_present" value="yes" 
+                                   class="mr-2" {% if request.form.get('sepsis_present') == 'yes' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">Yes</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="sepsis_present" value="no" 
+                                   class="mr-2" {% if request.form.get('sepsis_present') == 'no' %}checked{% endif %}>
+                            <span class="text-sm text-[#000000]">No</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-6">
+                <button type="submit" class="btn-primary inline-flex items-center px-8 py-3">
+                    <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    Assess Septic Shock
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Information Section -->
+    <div class="mt-8 bg-[#f8f9fa] rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-[#000000] mb-4">About Septic Shock</h3>
+        <div class="space-y-3 text-[#000000]/80">
+            <p><strong>Septic Shock Definition (Sepsis-3):</strong> A subset of sepsis in which underlying circulatory and cellular/metabolic abnormalities are profound enough to substantially increase mortality.</p>
+            <p><strong>Criteria for Septic Shock:</strong></p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Sepsis present (SOFA ≥2 or clinical suspicion)</li>
+                <li>Persistent hypotension requiring vasopressors to maintain MAP ≥65 mmHg</li>
+                <li>Lactate >2 mmol/L despite adequate volume resuscitation</li>
+            </ul>
+            <p><strong>Mortality:</strong> Hospital mortality >40%</p>
+            <p><strong>Management:</strong> Requires immediate intensive care, source control, antibiotics, and hemodynamic support.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

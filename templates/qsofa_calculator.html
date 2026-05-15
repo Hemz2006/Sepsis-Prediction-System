@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}qSOFA Calculator - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-4">qSOFA Calculator</h1>
+        <p class="text-lg text-[#000000]/80">Quick Sequential Organ Failure Assessment for bedside sepsis screening</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border card-accent p-8">
+        <form method="POST" class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Respiratory Rate -->
+                <div>
+                    <label for="respiratory_rate" class="block text-sm font-medium mb-2">
+                        Respiratory Rate (breaths/min)
+                    </label>
+                    <input type="number" id="respiratory_rate" name="respiratory_rate" 
+                           value="{{ request.form.get('respiratory_rate', '20') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
+                           required>
+                    <p class="text-xs text-[#000000]/60 mt-1">≥22 indicates abnormality</p>
+                </div>
+
+                <!-- Systolic Blood Pressure -->
+                <div>
+                    <label for="systolic_bp" class="block text-sm font-medium mb-2">
+                        Systolic Blood Pressure (mmHg)
+                    </label>
+                    <input type="number" id="systolic_bp" name="systolic_bp" 
+                           value="{{ request.form.get('systolic_bp', '120') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
+                           required>
+                    <p class="text-xs text-[#000000]/60 mt-1">≤100 indicates hypotension</p>
+                </div>
+
+                <!-- Glasgow Coma Scale -->
+                <div>
+                    <label for="gcs" class="block text-sm font-medium mb-2">
+                        Glasgow Coma Scale
+                    </label>
+                    <input type="number" id="gcs" name="gcs" min="3" max="15"
+                           value="{{ request.form.get('gcs', '15') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand)]"
+                           required>
+                    <p class="text-xs text-[#000000]/60 mt-1"><15 indicates altered mentation</p>
+                </div>
+
+                <!-- Suspected Infection -->
+                <div>
+                    <label class="block text-sm font-medium mb-2">
+                        Suspected Infection
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="suspected_infection" value="yes" 
+                                   class="mr-2" {% if request.form.get('suspected_infection') == 'yes' %}checked{% endif %}>
+                            <span class="text-sm">Yes</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="suspected_infection" value="no" 
+                                   class="mr-2" {% if request.form.get('suspected_infection') == 'no' %}checked{% endif %}>
+                            <span class="text-sm">No</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-6">
+                <button type="submit" class="btn-primary inline-flex items-center px-8 py-3">
+                    <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    Calculate qSOFA Score
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Information Section -->
+    <div class="mt-8 bg-[#f8f9fa] rounded-2xl p-6">
+        <h3 class="text-xl font-semibold mb-4">About qSOFA</h3>
+        <div class="space-y-3 text-[#000000]/80">
+            <p><strong>qSOFA (quick SOFA)</strong> is a bedside screening tool for sepsis that can be performed quickly without laboratory values.</p>
+            <p><strong>Criteria:</strong></p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li>Respiratory rate ≥22/min</li>
+                <li>Altered mentation (GCS <15)</li>
+                <li>Systolic blood pressure ≤100 mmHg</li>
+            </ul>
+            <p><strong>Interpretation:</strong></p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>Score 0:</strong> Low risk</li>
+                <li><strong>Score 1:</strong> Intermediate risk - monitor closely</li>
+                <li><strong>Score ≥2:</strong> High risk - consider ICU evaluation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

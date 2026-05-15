@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Septic Shock Assessment Results - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-[#000000] mb-4">Septic Shock Assessment Results</h1>
+        <p class="text-lg text-[#000000]/80">Septic Shock Evaluation Results</p>
+    </div>
+
+    <!-- Main Results -->
+    <div class="bg-white rounded-2xl shadow-lg border border-[#000000]/10 p-8 mb-8">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full text-4xl font-bold text-white
+                {% if result.septic_shock_present %}bg-red-600{% else %}bg-green-500{% endif %}">
+                {% if result.septic_shock_present %}⚠️{% else %}✓{% endif %}
+            </div>
+            <h2 class="text-3xl font-bold text-[#000000] mt-4">
+                {% if result.septic_shock_present %}SEPTIC SHOCK PRESENT{% else %}No Septic Shock{% endif %}
+            </h2>
+            <p class="text-xl text-[#000000]/80 mt-2">
+                Mortality Risk: {{ result.estimated_mortality_risk }}
+            </p>
+        </div>
+
+        <!-- Criteria Assessment -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-[#000000] mb-4">Criteria Assessment:</h3>
+            <div class="space-y-4">
+                <div class="flex items-center p-4 rounded-lg {% if result.criteria.sepsis_present %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 {% if result.criteria.sepsis_present %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                        {% if result.criteria.sepsis_present %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Sepsis Present</p>
+                        <p class="text-sm text-[#000000]/60">SOFA ≥2 or clinical suspicion</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center p-4 rounded-lg {% if result.criteria.persistent_hypotension_on_vasopressors %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 {% if result.criteria.persistent_hypotension_on_vasopressors %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                        {% if result.criteria.persistent_hypotension_on_vasopressors %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Persistent Hypotension on Vasopressors</p>
+                        <p class="text-sm text-[#000000]/60">MAP: {{ map_mmhg }} mmHg, Vasopressors: {{ 'Yes' if on_vasopressors else 'No' }}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center p-4 rounded-lg {% if result.criteria.lactate_greater_than_2 %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 {% if result.criteria.lactate_greater_than_2 %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                        {% if result.criteria.lactate_greater_than_2 %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Lactate >2 mmol/L</p>
+                        <p class="text-sm text-[#000000]/60">Lactate: {{ lactate }} mmol/L</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center p-4 rounded-lg {% if result.criteria.adequate_volume_resuscitation %}bg-green-50 border border-green-200{% else %}bg-red-50 border border-red-200{% endif %}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 {% if result.criteria.adequate_volume_resuscitation %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                        {% if result.criteria.adequate_volume_resuscitation %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Adequate Volume Resuscitation</p>
+                        <p class="text-sm text-[#000000]/60">≥30 mL/kg crystalloid: {{ 'Yes' if adequate_volume_resus else 'No' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Interpretation -->
+        <div class="bg-[#f8f9fa] rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-[#000000] mb-3">Clinical Interpretation:</h3>
+            <p class="text-[#000000]">{{ result.interpretation }}</p>
+        </div>
+
+        <!-- Management Recommendations -->
+        {% if result.septic_shock_present %}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-red-800 mb-4">🚨 IMMEDIATE MANAGEMENT REQUIRED</h3>
+            <div class="space-y-3 text-red-700">
+                <p><strong>1. Immediate Actions:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>Transfer to ICU immediately</li>
+                    <li>Obtain blood cultures before antibiotics</li>
+                    <li>Start broad-spectrum antibiotics within 1 hour</li>
+                    <li>Source control if identified</li>
+                </ul>
+                <p><strong>2. Hemodynamic Support:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>Continue vasopressor support to maintain MAP ≥65 mmHg</li>
+                    <li>Consider inotropic support if needed</li>
+                    <li>Monitor lactate clearance</li>
+                </ul>
+                <p><strong>3. Monitoring:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>Continuous hemodynamic monitoring</li>
+                    <li>Serial lactate measurements</li>
+                    <li>Organ function assessment</li>
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-green-800 mb-4">✓ No Septic Shock</h3>
+            <div class="space-y-3 text-green-700">
+                <p><strong>Management:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>Continue monitoring for sepsis progression</li>
+                    <li>Reassess if clinical condition changes</li>
+                    <li>Consider qSOFA or SOFA scoring for ongoing assessment</li>
+                    <li>Maintain appropriate infection control measures</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center">
+        <a href="{{ url_for('septic_shock_calculator') }}" class="btn-primary inline-flex items-center px-6 py-3">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            Assess Again
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="nav-link inline-flex items-center px-6 py-3">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

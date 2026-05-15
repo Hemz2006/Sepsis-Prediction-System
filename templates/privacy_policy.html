@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12">
+    <div class="bg-white p-8 rounded-2xl card-accent">
+        <h1 class="text-3xl font-extrabold mb-4">Privacy Policy</h1>
+        <p class="text-[#000000]/80 mb-4">This Privacy Policy explains how the Sepsis Prediction Simulator ("the Service") handles information. This application is a demonstration / academic tool and is not a production medical system. By using the Service you acknowledge the demo nature of the platform.</p>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-2">What data we collect</h2>
+        <ul class="list-disc list-inside text-[#000000]/80 mb-4">
+            <li>Basic usage data (e.g., timestamps, page visits) for analytics and improvement.</li>
+            <li>Clinical inputs you provide when using calculators or adding patient/demo records (vital signs, laboratory values). In demo mode these inputs may be stored locally in the instance database for demonstration and testing.</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-2">How we use data</h2>
+        <ul class="list-disc list-inside text-[#000000]/80 mb-4">
+            <li>To provide risk calculations and assessment results as part of the demo feature set.</li>
+            <li>To improve the application, fix bugs, and for educational or research analyses (aggregated, de-identified).</li>
+            <li>To demonstrate workflows and functionality for clinicians and developers.</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Data security and privacy practices</h2>
+        <p class="text-[#000000]/80 mb-4">We follow reasonable practices for a demonstration application. This project is provided for educational purposes; if you deploy this project in a production environment you must configure secure hosting, encryption at rest and in transit, access controls, and compliance with relevant regulations (e.g., HIPAA) before using real patient data.</p>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Disclaimer</h2>
+        <p class="text-[#000000]/80 mb-4">This tool is a demo/academic project and not intended to be used as a medical device or substitute for clinical judgment. Results are provided for demonstration and educational purposes only.</p>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-2">Contact</h2>
+        <p class="text-[#000000]/80">For questions or support related to privacy, please contact: <strong>support@example.org</strong>.</p>
+    </div>
+</div>
+{% endblock %}
+

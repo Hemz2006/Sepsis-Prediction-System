@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-extrabold" style="letter-spacing: -1px; text-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+            Doctor Dashboard
+        </h1>
+        <p class="text-lg text-[#666666] mt-2 bg-white inline-block px-6 py-2 rounded-xl shadow" style="box-shadow: 0 2px 8px 0 rgba(0,0,0,0.1);">
+            Manage your patients and monitor sepsis risk assessments
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <!-- Total Patients -->
+        <div class="bg-gradient-to-br from-[#f8f9fa] via-white to-[#e9ecef] rounded-3xl shadow-2xl border card-accent transform hover:-translate-y-1 transition duration-200">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 icon-bg-2 rounded-full flex items-center justify-center">
+                        <svg class="h-6 w-6 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-5">
+                        <dt class="text-sm font-semibold text-[#666666] truncate">Total Patients</dt>
+                        <dd class="text-2xl font-bold text-[#000000]">{{ patient_data|length }}</dd>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Readings -->
+        <div class="bg-gradient-to-br from-[#e9ecef] via-white to-[#f8f9fa] rounded-3xl shadow-2xl border card-accent transform hover:-translate-y-1 transition duration-200">
+            <div class="p-6 flex items-center">
+                <div class="w-12 h-12 icon-bg-3 rounded-full flex items-center justify-center">
+                    <svg class="h-6 w-6 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="ml-5">
+                    <dt class="text-sm font-semibold text-[#666666] truncate">Total SOFA Tests</dt>
+                    <dd class="text-2xl font-bold text-[#000000]">{{ total_tests }}</dd>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sepsis Alerts -->
+        <div class="bg-gradient-to-br from-[#fff] via-[#f8f9fa] to-[rgba(0,0,0,0.05)] rounded-3xl shadow-2xl border card-accent transform hover:-translate-y-1 transition duration-200">
+            <div class="p-6 flex items-center">
+                <div class="w-12 h-12 icon-bg-4 rounded-full flex items-center justify-center">
+                    <svg class="h-6 w-6 icon-brand text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <div class="ml-5">
+                    <dt class="text-sm font-semibold text-[#666666] truncate">Sepsis Alerts</dt>
+                    <dd class="text-2xl font-bold text-[#000000]">{{ sepsis_alerts }}</dd>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-gradient-to-br from-[rgba(0,0,0,0.05)] via-white to-[#f8f9fa] rounded-3xl shadow-2xl border card-accent transform hover:-translate-y-1 transition duration-200">
+            <div class="p-6 flex items-center">
+                <div class="w-12 h-12 icon-bg-2 rounded-full flex items-center justify-center">
+                    <svg class="h-6 w-6 icon-brand text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-5">
+                    <dt class="text-sm font-semibold text-[#666666] truncate">Recent Activity</dt>
+                    <dd class="text-2xl font-bold text-[#000000]">{{ recent_tests }}</dd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-10">
+        <a href="{{ url_for('new_patient') }}" 
+           class="btn-primary inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-2xl shadow-lg text-white transition hover:opacity-90">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New Patient
+        </a>
+    </div>
+
+    <!-- Patients List -->
+    <div class="bg-gradient-to-br from-[#f8f9fa] via-white to-[#e9ecef] shadow-2xl border border-[rgba(0,0,0,0.1)] sm:rounded-3xl">
+        <div class="px-6 py-7 sm:px-8">
+            <h3 class="text-2xl font-bold">Your Patients</h3>
+            <p class="mt-1 max-w-2xl text-base text-[#666666]">Manage patient information and view sepsis risk assessments</p>
+        </div>
+
+        {% if patient_data and patient_data|length > 0 %}
+        <ul class="divide-y divide-[rgba(0,0,0,0.1)]">
+            {% for data in patient_data %}
+            <li>
+                <div class="px-6 py-6 sm:px-8 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="h-12 w-12 rounded-full icon-bg-1 flex items-center justify-center shadow">
+                            <span class="text-white font-bold text-xl">{{ data.patient.name[0]|default('?', true) }}</span>
+                        </div>
+                        <div class="ml-5">
+                            <div class="flex items-center">
+                                <p class="text-lg font-semibold">{{ data.patient.name }}</p>
+
+                                {% if data.news2_risk %}
+                                    <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow border"
+                                          style="{% if data.news2_risk == 'Low' %}background:#E6FFF2;color:#00B26A;border-color:#00B26A;
+                                                 {% elif data.news2_risk == 'Medium' %}background:#FFF3CD;color:#856404;border-color:#856404;
+                                                 {% elif data.news2_risk == 'High' %}background:#FFEEF2;color:#FF3366;border-color:#FF3366;{% endif %}">
+                                        NEWS2: {{ data.news2_risk }}
+                                    </span>
+                                {% else %}
+                                    <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-300 shadow">
+                                        No NEWS2 test yet
+                                    </span>
+                                {% endif %}
+                                <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[rgba(0,0,0,0.05)] text-[#666666] border border-[rgba(0,0,0,0.1)]">
+                                    {{ data.patient.age }} years, {{ data.patient.gender }}
+                                </span>
+                            </div>
+
+                            <div class="mt-2 flex items-center text-sm text-[#666666]">
+                                <p>Added 
+                                    {% if data.patient.created_at %}
+                                        {{ data.patient.created_at.strftime('%B %d, %Y') }}
+                                    {% else %}
+                                        Unknown date
+                                    {% endif %}
+                                </p>
+                                <span class="mx-2">•</span>
+                                <p>{{ data.patient.sofa_tests|length }} SOFA tests</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        {% if data.patient.sofa_tests and data.patient.sofa_tests|length > 0 %}
+                            {% set latest_test = data.patient.sofa_tests[0] %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow"
+                                  style="{% if latest_test.sepsis_criteria_met or latest_test.high_risk or latest_test.septic_shock_present %}
+                                             background:#FFEEF2;color:#FF3366;
+                                         {% else %}
+                                             background:#E6FFF2;color:#00B26A;
+                                         {% endif %}">
+                                {% if latest_test.sepsis_criteria_met or latest_test.high_risk or latest_test.septic_shock_present %}
+    {% if latest_test.test_type == 'qsofa' %}
+        High Risk
+    {% elif latest_test.test_type == 'sofa' %}
+        Sepsis
+    {% elif latest_test.test_type == 'septic_shock' %}
+        Septic Shock
+    {% endif %}
+{% else %}
+    {% if latest_test.test_type == 'qsofa' %}
+        Low Risk
+    {% elif latest_test.test_type == 'sofa' %}
+        No Sepsis
+    {% elif latest_test.test_type == 'septic_shock' %}
+        No Shock
+    {% endif %}
+{% endif %}
+
+                            </span>
+                        {% endif %}
+
+                        <a href="{{ url_for('patient_detail', patient_id=data.patient.id) }}" 
+                           class="btn-ghost inline-flex items-center px-4 py-2 border border-[rgba(0,0,0,0.1)] shadow text-sm font-medium rounded-xl bg-white hover:bg-[#f8f9fa] transition">
+                            View Details
+                        </a>
+
+                        <a href="{{ url_for('new_sofa_test', patient_id=data.patient.id) }}" 
+                           class="btn-primary inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-white transition hover:opacity-90">
+                            Add Patient Reading
+                        </a>
+
+                        <form method="POST" action="{{ url_for('delete_patient', patient_id=data.patient.id) }}" 
+                              onsubmit="return confirm('Are you sure you want to delete {{ data.patient.name }} and all associated data?');">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl text-white bg-red-600 hover:bg-red-700 transition">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="px-6 py-6 sm:px-8 text-center text-[#666666]">
+            <p>No patients added yet. Start by adding a new patient.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}SOFA Test - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-[#000000] mb-4">SOFA Test</h1>
+        <p class="text-lg text-[#000000]/80">Sequential Organ Failure Assessment for {{ patient.name }}</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-[#000000]/10 p-8">
+        <form method="POST" class="space-y-8">
+            <!-- Respiratory System -->
+            <div class="border-b border-[#000000]/10 pb-6">
+                <h3 class="text-xl font-semibold text-[#000000] mb-4">Respiratory System</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="pao2_fio2" class="block text-sm font-medium text-[#000000] mb-2">
+                            PaO₂/FiO₂ Ratio (mmHg) *
+                        </label>
+                        <input type="number" id="pao2_fio2" name="pao2_fio2" 
+                               value="{{ request.form.get('pao2_fio2', '300') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                        <p class="text-xs text-[#000000]/60 mt-1">≥400=0, 300-399=1, 200-299=2, 100-199=3, <100=4</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#000000] mb-2">
+                            Respiratory Support *
+                        </label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="respiratory_support" value="yes" 
+                                       class="mr-2" {% if request.form.get('respiratory_support') == 'yes' %}checked{% endif %}>
+                                <span class="text-sm text-[#000000]">Yes (mechanical ventilation, CPAP, etc.)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="respiratory_support" value="no" 
+                                       class="mr-2" {% if request.form.get('respiratory_support') == 'no' %}checked{% endif %}>
+                                <span class="text-sm text-[#000000]">No</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cardiovascular System -->
+            <div class="border-b border-[#000000]/10 pb-6">
+                <h3 class="text-xl font-semibold text-[#000000] mb-4">Cardiovascular System</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="map_mmhg" class="block text-sm font-medium text-[#000000] mb-2">
+                            Mean Arterial Pressure (mmHg) *
+                        </label>
+                        <input type="number" id="map_mmhg" name="map_mmhg" 
+                               value="{{ request.form.get('map_mmhg', '70') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                    </div>
+                    <div>
+                        <label for="baseline_sofa" class="block text-sm font-medium text-[#000000] mb-2">
+                            Baseline SOFA Score
+                        </label>
+                        <input type="number" id="baseline_sofa" name="baseline_sofa" min="0" max="24"
+                               value="{{ request.form.get('baseline_sofa', '0') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                        <p class="text-xs text-[#000000]/60 mt-1">Previous SOFA score (default: 0)</p>
+                    </div>
+                </div>
+                
+                <!-- Vasopressor Doses -->
+                <div class="mt-4">
+                    <h4 class="text-lg font-medium text-[#000000] mb-3">Vasopressor Doses (μg/kg/min)</h4>
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="dopamine_dose" class="block text-sm font-medium text-[#000000] mb-1">
+                                Dopamine
+                            </label>
+                            <input type="number" id="dopamine_dose" name="dopamine_dose" step="0.1"
+                                   value="{{ request.form.get('dopamine_dose', '0') }}"
+                                   class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                        </div>
+                        <div>
+                            <label for="dobutamine_dose" class="block text-sm font-medium text-[#000000] mb-1">
+                                Dobutamine
+                            </label>
+                            <input type="number" id="dobutamine_dose" name="dobutamine_dose" step="0.1"
+                                   value="{{ request.form.get('dobutamine_dose', '0') }}"
+                                   class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                        </div>
+                        <div>
+                            <label for="epinephrine_dose" class="block text-sm font-medium text-[#000000] mb-1">
+                                Epinephrine
+                            </label>
+                            <input type="number" id="epinephrine_dose" name="epinephrine_dose" step="0.01"
+                                   value="{{ request.form.get('epinephrine_dose', '0') }}"
+                                   class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                        </div>
+                        <div>
+                            <label for="norepinephrine_dose" class="block text-sm font-medium text-[#000000] mb-1">
+                                Norepinephrine
+                            </label>
+                            <input type="number" id="norepinephrine_dose" name="norepinephrine_dose" step="0.01"
+                                   value="{{ request.form.get('norepinephrine_dose', '0') }}"
+                                   class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Laboratory Values -->
+            <div class="border-b border-[#000000]/10 pb-6">
+                <h3 class="text-xl font-semibold text-[#000000] mb-4">Laboratory Values</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="platelets" class="block text-sm font-medium text-[#000000] mb-2">
+                            Platelets (×10³/μL) *
+                        </label>
+                        <input type="number" id="platelets" name="platelets" 
+                               value="{{ request.form.get('platelets', '150') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                    </div>
+                    <div>
+                        <label for="bilirubin" class="block text-sm font-medium text-[#000000] mb-2">
+                            Total Bilirubin (mg/dL) *
+                        </label>
+                        <input type="number" id="bilirubin" name="bilirubin" step="0.1"
+                               value="{{ request.form.get('bilirubin', '1.0') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                    </div>
+                    <div>
+                        <label for="creatinine" class="block text-sm font-medium text-[#000000] mb-2">
+                            Creatinine (mg/dL) *
+                        </label>
+                        <input type="number" id="creatinine" name="creatinine" step="0.1"
+                               value="{{ request.form.get('creatinine', '1.0') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label for="urine_output" class="block text-sm font-medium text-[#000000] mb-2">
+                        Urine Output (mL/day)
+                    </label>
+                    <input type="number" id="urine_output" name="urine_output" 
+                           value="{{ request.form.get('urine_output', '') }}"
+                           class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]">
+                    <p class="text-xs text-[#000000]/60 mt-1">Optional - used for renal scoring if available</p>
+                </div>
+            </div>
+
+            <!-- Neurological System -->
+            <div class="pb-6">
+                <h3 class="text-xl font-semibold text-[#000000] mb-4">Neurological System</h3>
+                <div class="grid md:grid-cols-1 gap-6">
+                    <div>
+                        <label for="gcs" class="block text-sm font-medium text-[#000000] mb-2">
+                            Glasgow Coma Scale (3-15) *
+                        </label>
+                        <input type="number" id="gcs" name="gcs" min="3" max="15"
+                               value="{{ request.form.get('gcs', '15') }}"
+                               class="w-full px-3 py-2 border border-[#000000]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#000000]"
+                               required>
+                        <p class="text-xs text-[#000000]/60 mt-1">15=normal, 13-14=1, 10-12=2, 6-9=3, 3-5=4</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-6">
+                <button type="submit" class="btn-primary inline-flex items-center px-8 py-3">
+                    <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    Calculate SOFA Score
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Information Section -->
+    <div class="mt-8 bg-[#f8f9fa] rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-[#000000] mb-4">About SOFA</h3>
+        <div class="space-y-3 text-[#000000]/80">
+            <p><strong>SOFA (Sequential Organ Failure Assessment)</strong> is a comprehensive scoring system that evaluates organ dysfunction in six systems.</p>
+            <p><strong>Organ Systems:</strong></p>
+            <ul class="list-disc list-inside ml-4 space-y-1">
+                <li><strong>Respiratory:</strong> PaO₂/FiO₂ ratio</li>
+                <li><strong>Coagulation:</strong> Platelet count</li>
+                <li><strong>Liver:</strong> Bilirubin level</li>
+                <li><strong>Cardiovascular:</strong> MAP and vasopressor requirements</li>
+                <li><strong>CNS:</strong> Glasgow Coma Scale</li>
+                <li><strong>Renal:</strong> Creatinine or urine output</li>
+            </ul>
+            <p><strong>Sepsis-3 Criteria:</strong> Acute increase in SOFA score ≥2 points in the presence of suspected infection indicates sepsis.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

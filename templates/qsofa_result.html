@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}qSOFA Results - Sepsis Prediction Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-[#000000] mb-4">qSOFA Results</h1>
+        <p class="text-lg text-[#000000]/80">Quick Sequential Organ Failure Assessment Results</p>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="bg-white rounded-2xl shadow-lg border border-[#000000]/10 p-8 mb-8">
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full text-3xl font-bold text-white
+                {% if result.qsofa_score >= 2 %}bg-red-600{% elif result.qsofa_score == 1 %}bg-yellow-500{% else %}bg-green-500{% endif %}">
+                {{ result.qsofa_score }}
+            </div>
+            <h2 class="text-2xl font-bold text-[#000000] mt-4">qSOFA Score: {{ result.qsofa_score }}</h2>
+            <p class="text-lg {% if result.high_risk_for_poor_outcomes %}text-red-600{% elif result.qsofa_score == 1 %}text-yellow-600{% else %}text-green-600{% endif %} font-semibold">
+                {% if result.high_risk_for_poor_outcomes %}HIGH RISK{% elif result.qsofa_score == 1 %}INTERMEDIATE RISK{% else %}LOW RISK{% endif %}
+            </p>
+        </div>
+
+        <!-- Criteria Met -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-[#000000] mb-3">Criteria Met:</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="flex items-center p-3 rounded-lg {% if result.criteria_met.respiratory_rate_22_or_higher %}bg-red-50 border border-red-200{% else %}bg-gray-50 border border-gray-200{% endif %}">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center mr-3 {% if result.criteria_met.respiratory_rate_22_or_higher %}bg-red-500 text-white{% else %}bg-gray-300 text-gray-600{% endif %}">
+                        {% if result.criteria_met.respiratory_rate_22_or_higher %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Respiratory Rate ≥22</p>
+                        <p class="text-sm text-[#000000]/60">{{ respiratory_rate }}/min</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-lg {% if result.criteria_met.altered_mentation %}bg-red-50 border border-red-200{% else %}bg-gray-50 border border-gray-200{% endif %}">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center mr-3 {% if result.criteria_met.altered_mentation %}bg-red-500 text-white{% else %}bg-gray-300 text-gray-600{% endif %}">
+                        {% if result.criteria_met.altered_mentation %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">Altered Mentation</p>
+                        <p class="text-sm text-[#000000]/60">GCS: {{ gcs }}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-lg {% if result.criteria_met.systolic_bp_100_or_lower %}bg-red-50 border border-red-200{% else %}bg-gray-50 border border-gray-200{% endif %}">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center mr-3 {% if result.criteria_met.systolic_bp_100_or_lower %}bg-red-500 text-white{% else %}bg-gray-300 text-gray-600{% endif %}">
+                        {% if result.criteria_met.systolic_bp_100_or_lower %}✓{% else %}✗{% endif %}
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#000000]">SBP ≤100 mmHg</p>
+                        <p class="text-sm text-[#000000]/60">{{ systolic_bp }} mmHg</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interpretation -->
+        <div class="bg-[#f8f9fa] rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-[#000000] mb-2">Clinical Interpretation:</h3>
+            <p class="text-[#000000]">{{ result.interpretation }}</p>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-[#f8f9fa] rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-[#000000] mb-2">Recommendations:</h3>
+            <p class="text-[#000000]">{{ result.recommendations }}</p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center">
+        <a href="{{ url_for('qsofa_calculator') }}" 
+           class="nav-link inline-flex items-center px-6 py-3">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Calculate Again
+        </a>
+        
+        <a href="{{ url_for('sofa_calculator') }}" 
+           class="btn-primary inline-flex items-center px-6 py-3">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Calculate SOFA Score
+        </a>
+        
+        <a href="{{ url_for('dashboard') }}" 
+           class="nav-link inline-flex items-center px-6 py-3">
+            <svg class="h-5 w-5 mr-2 icon-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

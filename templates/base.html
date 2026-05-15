@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            <span style="font-family: 'Merriweather', 'Times New Roman', Times, serif; font-weight: 700; letter-spacing: 0.5px;">
+                Sepsis Prediction Simulator
+            </span>
+        {% endblock %}
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Brand variables (primary = #9F00FF) */
+        :root {
+            --brand: #9F00FF; /* main purple */
+            --brand-dark: #7c00cc; /* darker purple for hover/active */
+            --brand-600: #8a00e6;
+            --brand-100: rgba(159,0,255,0.08); /* very light purple background */
+            --brand-150: rgba(159,0,255,0.12);
+            --muted: #6b6b86;
+            --card-border: rgba(159,0,255,0.12);
+            --page-bg: linear-gradient(135deg, #fbf7ff 0%, #f3eaff 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--page-bg);
+            color: #0b0b0b; /* keep body text high contrast */
+        }
+        .official-title {
+            font-family: 'Merriweather', 'Times New Roman', Times, serif;
+            font-weight: 700;
+            font-size: 1.15rem; /* reduced so it doesn't dominate the navbar */
+            letter-spacing: 0.5px;
+            color: #000000;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 0 #fff;
+        }
+        /* Brand title with logo: keep logo and text aligned and spaced */
+        .official-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem; /* space between logo and text */
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-logo svg { width: 100%; height: 100%; }
+        .brand-logo .stroke-brand { stroke: var(--brand); }
+        .brand-logo .fill-brand { fill: var(--brand); }
+
+        /* Navigation links: muted by default, purple only on hover and for the active page */
+        .nav-link {
+            color: var(--muted); /* neutral text for non-active links */
+            font-weight: 500; /* slightly lighter for non-primary links */
+            transition: color 0.18s, border-color 0.18s, background-color 0.18s;
+            display: inline-flex;
+            align-items: center; /* vertically center text and icons */
+            gap: 0.9rem; /* breathing room between icon/text */
+            padding: 0.75rem 1.1rem; /* increased padding for airiness */
+            font-size: 1rem; /* slightly larger for readability */
+            line-height: 1.4; /* comfortable line-height */
+            text-decoration: none;
+            border-radius: 0.6rem;
+            white-space: nowrap; /* prevent wrapping */
+        }
+        /* Hover shows purple tint and darker text; active page uses purple highlight */
+        .nav-link:hover { color: var(--brand-dark); background: var(--brand-100); }
+        .nav-link.active { color: var(--brand-dark); border-bottom: 2px solid var(--brand); background: transparent; }
+
+        /* Keep dropdown toggle looking like other nav links but behave like a button */
+        .nav-dropdown-toggle {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 0.75rem; /* match .nav-link so sizing and baseline are identical */
+            margin: 0;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        /* Ensure svg icons used inside nav links don't change layout when present */
+        .nav-link svg, .nav-dropdown-toggle svg {
+            display: inline-block;
+            vertical-align: middle;
+            height: 1rem;
+            width: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Brand button utilities */
+        .btn-primary {
+            background: var(--brand);
+            color: white !important;
+            border-radius: 0.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: background-color 0.18s, transform 0.08s;
+        }
+        .btn-primary:hover { background: var(--brand-dark); }
+        .btn-ghost {
+            background: transparent;
+            color: var(--brand);
+            border: 1px solid var(--brand-150);
+            padding: 0.5rem 0.8rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Make primary headings visually purple for brand consistency */
+        h1, h2 { color: var(--brand) !important; }
+        /* Slightly darker purple for H3 to preserve hierarchy */
+        h3 { color: var(--brand-dark) !important; }
+
+        /* Subtle purple accents for cards */
+        .card-accent {
+            border-top: 4px solid rgba(159,0,255,0.08);
+            box-shadow: 0 10px 30px rgba(159,0,255,0.06);
+        }
+
+        /* Hero / jumbotron light purple tint */
+        .hero-spot {
+            background: linear-gradient(90deg, rgba(159,0,255,0.06), rgba(159,0,255,0.02));
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+
+        /* Icon and card helper utilities */
+        .icon-bg-1 { background: var(--brand-100); }
+        .icon-bg-2 { background: rgba(159,0,255,0.06); }
+        .icon-bg-3 { background: rgba(159,0,255,0.1); }
+        .icon-bg-4 { background: var(--brand-150); }
+        .icon-brand { color: var(--brand-dark); }
+        .text-brand { color: var(--brand); }
+
+        .nav-bg {
+            background: linear-gradient(90deg, #ffffff 55%, rgba(159,0,255,0.02) 100%);
+        }
+
+        /* Dropdown menu styling to ensure consistent item styles and visibility */
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1.1rem;
+            color: #0b0b0b;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background-color 0.12s, color 0.12s;
+        }
+        .dropdown-item:hover, .dropdown-item:focus {
+            background: var(--brand-100);
+            color: var(--brand-dark);
+            outline: none;
+        }
+        .dropdown-menu { min-width: 16rem; white-space: normal; }
+        /* Ensure the calculators dropdown is never clipped by parent containers
+           and can grow to fit its contents. If the viewport is small, allow
+           vertical scrolling while keeping the current visual style. */
+        .dropdown-menu {
+            position: absolute !important; /* explicit absolute positioning */
+            z-index: 9999 !important;      /* appear above page cards/forms */
+            height: auto !important;       /* don't force a fixed height */
+            max-height: calc(100vh - 6rem) !important; /* leave top/bottom padding */
+            overflow-y: auto !important;   /* allow scrolling on small screens */
+            overflow-x: hidden !important;
+            -webkit-overflow-scrolling: touch; /* smooth scrolling on touch devices */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12); /* slightly stronger shadow so it sits above */
+        }
+
+        /* Make sure the immediate nav group container doesn't clip absolutely positioned children */
+        .relative.group {
+            overflow: visible !important;
+        }
+         /* When opened via JS, ensure the menu is shown regardless of hover state */
+         .dropdown-menu.js-open { opacity: 1 !important; visibility: visible !important; }
+
+        /* Secondary/low-emphasis nav item (e.g., Privacy) */
+        .nav-secondary { color: rgba(11,11,11,0.6); font-weight: 500; }
+        .nav-secondary:hover { color: var(--brand-dark); background: var(--brand-100); }
+
+        /* Nav group helpers for left and right grouping */
+        .nav-left { display: flex; align-items: center; gap: 1.75rem; }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        /* Ensure right-side Dashboard link uses the same visual treatment as left-side links */
+        .nav-right .nav-link { color: var(--muted); font-weight:500; }
+
+        /* Subtle divider between nav groups */
+        .nav-divider { width: 1px; height: 32px; background: rgba(159,0,255,0.06); margin: 0 0.9rem; }
+
+        /* Card selection helper used by test selection UIs */
+        .card-selected {
+            background: var(--brand-100) !important;
+            border-color: var(--brand) !important;
+            box-shadow: 0 6px 18px rgba(159,0,255,0.06) !important;
+        }
+         .flash-message { animation: slideIn 0.28s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-100%); opacity:0;} to { transform: translateY(0); opacity:1; } }
+
+        /* Custom scrollbar for brand-themed UI */
+        ::-webkit-scrollbar { width: 8px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-150); border-radius: 6px; }
+
+        main { background: #fff; border-radius: 1.5rem; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.06); }
+        footer { background: linear-gradient(90deg, #fff 0%, rgba(159,0,255,0.02) 100%); }
+    </style>
+</head>
+<body class="bg-[#f8f9fa] text-[#000000] min-h-screen">
+    <!-- Navigation -->
+    <nav class="nav-bg shadow-lg border-b border-[#666666]/20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{{ url_for('home') }}" class="official-title">
+                            <span class="brand-logo" aria-hidden="true">
+                                <!-- Minimal medical logo: shield with ECG line, using brand color -->
+                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sepsis Prediction logo">
+                                    <path class="stroke-brand" d="M32 6l18 6v12c0 14-10 26-18 28-8-2-18-14-18-28V12L32 6z" fill="none" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>
+                                    <path class="stroke-brand" d="M14 28h6l4-8 6 16 4-10 6 6h6" fill="none" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <span style="display:inline-block">Sepsis Prediction Simulator</span>
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center nav-left">
+                        <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                            Home
+                        </a>
+                        <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+                            About
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <div class="relative group inline-flex items-center" tabindex="0" style="margin-left:0.6rem;">
+                            <button class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="calc-menu">
+                                <span class="flex items-center gap-2">Calculators
+                                    <svg class="ml-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                            <!-- dropdown opens on hover and when the group has focus (keyboard accessible) -->
+                            <div id="calc-menu" class="absolute left-0 mt-2 dropdown-menu bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50" style="left:auto;">
+                                <div class="py-1">
+                                    <a href="{{ url_for('qsofa_calculator') }}" class="dropdown-item">qSOFA Calculator</a>
+                                    <a href="{{ url_for('sofa_calculator') }}" class="dropdown-item">SOFA Calculator</a>
+                                    <a href="{{ url_for('septic_shock_calculator') }}" class="dropdown-item">Septic Shock Assessment</a>
+                                    <a href="{{ url_for('news2_calculator') }}" class="dropdown-item">NEWS2 Calculator</a>
+                                    <a href="{{ url_for('ai_model') }}" class="dropdown-item">AI Model</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <div class="nav-divider" aria-hidden="true"></div>
+                    {% if current_user.is_authenticated %}
+                        <div class="nav-right">
+                            <span class="text-[#000000]/80" style="font-weight:500; white-space:nowrap">Welcome, {{ current_user.name }}</span>
+                            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                                Dashboard
+                            </a>
+                            <a href="{{ url_for('logout') }}" class="btn-primary" style="white-space:nowrap">
+                                Logout
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="nav-right">
+                            <a href="{{ url_for('login') }}" class="nav-link">
+                                Login
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn-primary">
+                                Sign Up
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 py-2">
+                {% for category, message in messages %}
+                    <div class="flash-message mb-4 p-4 rounded-md 
+                        {% if category == 'error' %}
+                            bg-red-100 border-l-4 border-red-500 text-red-700
+                        {% elif category == 'success' %}
+                            bg-green-100 border-l-4 border-green-500 text-green-700
+                        {% elif category == 'warning' %}
+                            bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700
+                        {% else %}
+                            bg-[#f8f9fa] border-l-4 border-[#666666] text-[#000000]
+                        {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 mt-8 mb-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#666666]/20 mt-16">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-[#000000]/70">
+                    <p class="font-semibold" style="font-family: 'Merriweather', 'Times New Roman', Times, serif;">&copy; 2024 Sepsis Prediction Simulator</p>
+                    <p class="mt-1 text-sm">For educational purposes only. This tool is not a medical device and does not provide medical advice.</p>
+                </div>
+                <div class="text-sm">
+                    <a href="{{ url_for('privacy') }}" role="link" aria-label="Privacy Policy"
+                       class="inline-flex items-center gap-2 px-3 py-2 rounded-full"
+                       style="border:1px solid var(--brand); background:var(--brand-100); color:var(--brand-dark); font-weight:600; white-space:nowrap;">
+                        <!-- shield icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false" style="stroke:var(--brand-dark);">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2l7 4v5c0 5-3.5 9.7-7 11-3.5-1.3-7-6-7-11V6l7-4z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 11.5l1.5 1.5 3-3" stroke="var(--brand-dark)" />
+                        </svg>
+                        <span>Privacy Policy</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Portalized Calculators dropdown: clone the menu into document.body to avoid ancestor clipping
+        document.addEventListener('DOMContentLoaded', function () {
+            const calcGroup = document.querySelector('.relative.group.inline-flex.items-center[tabindex]');
+            if (!calcGroup) return;
+            const toggleButton = calcGroup.querySelector('.nav-dropdown-toggle');
+            const originalMenu = document.getElementById('calc-menu');
+            if (!toggleButton || !originalMenu) return;
+
+            // Create a portal clone appended to body so it's never clipped by nav/container overflow
+            let portalMenu = document.getElementById('calc-menu-portal');
+            if (!portalMenu) {
+                portalMenu = originalMenu.cloneNode(true);
+                portalMenu.id = 'calc-menu-portal';
+                // Prevent stylesheet .dropdown-menu !important rules from affecting the portal clone
+                portalMenu.classList.remove('dropdown-menu');
+                 // Remove utility/visibility classes relying on group hover; we'll control visibility via JS
+                 portalMenu.classList.remove('opacity-0', 'invisible', 'group-hover:opacity-100', 'group-hover:visible', 'group-focus-within:opacity-100', 'group-focus-within:visible');
+                 // Ensure portal menu initially hidden
+                 portalMenu.style.opacity = '0';
+                 portalMenu.style.visibility = 'hidden';
+                // Force fixed positioning and very high z-index using !important so stylesheet rules don't override
+                portalMenu.style.setProperty('position', 'fixed', 'important');
+                portalMenu.style.setProperty('z-index', '2147483647', 'important');
+                 portalMenu.style.maxHeight = 'calc(100vh - 6rem)';
+                 portalMenu.style.overflowY = 'auto';
+                 portalMenu.style.overflowX = 'hidden';
+                 portalMenu.style.boxShadow = '0 10px 30px rgba(0,0,0,0.12)';
+                 portalMenu.style.minWidth = originalMenu.style.minWidth || '';
+                 portalMenu.style.display = 'block'; // ensure measurements available
+                 document.body.appendChild(portalMenu);
+                 // Hide the original to avoid duplicate visuals and prevent hover from showing it
+                 originalMenu.style.setProperty('display', 'none', 'important');
+                 originalMenu.setAttribute('aria-hidden', 'true');
+             }
+
+            function refreshItems() {
+                return Array.from(portalMenu.querySelectorAll('.dropdown-item'));
+            }
+
+            let items = refreshItems();
+            items.forEach(it => it.setAttribute('tabindex', '0'));
+
+            function positionPortal() {
+                const rect = toggleButton.getBoundingClientRect();
+                // Use viewport coordinates since position is fixed
+                const viewportLeft = rect.left;
+                const viewportTop = rect.top;
+                const viewportBottom = rect.bottom;
+
+                // Temporary remove max-height to measure natural height
+                const prevMax = portalMenu.style.maxHeight;
+                portalMenu.style.setProperty('max-height', 'none', 'important');
+                portalMenu.style.setProperty('overflow-y', 'visible', 'important');
+                const naturalHeight = portalMenu.scrollHeight;
+
+                const availableBelow = window.innerHeight - viewportBottom;
+                const availableAbove = viewportTop;
+                const margin = 16;
+
+                // Prefer opening below the toggle so top items are visible. If there isn't
+                // enough space below, make the dropdown scrollable while still opening downward.
+                let placeBelow = true;
+                // If there's virtually no space below but significant space above, fall back to above.
+                if (availableBelow < 80 && availableAbove > availableBelow + 40) {
+                    placeBelow = false;
+                } else {
+                    placeBelow = true;
+                }
+
+                if (placeBelow) {
+                    // If the full menu fits below, show it without scrolling
+                    if (naturalHeight + margin <= availableBelow) {
+                        portalMenu.style.setProperty('max-height', 'none', 'important');
+                        portalMenu.style.setProperty('overflow-y', 'visible', 'important');
+                    } else {
+                        const maxH = Math.max(availableBelow - margin, 80);
+                        portalMenu.style.setProperty('max-height', maxH + 'px', 'important');
+                        portalMenu.style.setProperty('overflow-y', 'auto', 'important');
+                    }
+                    portalMenu.style.top = (viewportBottom + 8) + 'px';
+                    // Ensure the menu is scrolled to the top so first items are visible
+                    try { portalMenu.scrollTop = 0; } catch (e) { }
+                    // Extra defensive scroll into view for the first item
+                    try { const first = portalMenu.querySelector('.dropdown-item'); if (first) first.scrollIntoView({block: 'start'}); } catch (e) { }
+                } else {
+                    if (naturalHeight + margin <= availableAbove) {
+                        portalMenu.style.setProperty('max-height', 'none', 'important');
+                        portalMenu.style.setProperty('overflow-y', 'visible', 'important');
+                    } else {
+                        const maxH = Math.max(availableAbove - margin, 80);
+                        portalMenu.style.setProperty('max-height', maxH + 'px', 'important');
+                        portalMenu.style.setProperty('overflow-y', 'auto', 'important');
+                    }
+                    const height = Math.min(naturalHeight, parseInt(portalMenu.style.maxHeight || maxH + 'px', 10) || naturalHeight);
+                    portalMenu.style.top = (viewportTop - height - 8) + 'px';
+                    // Ensure the menu is scrolled to the top so first items are visible
+                    try { portalMenu.scrollTop = 0; } catch (e) { }
+                    try { const first = portalMenu.querySelector('.dropdown-item'); if (first) first.scrollIntoView({block: 'start'}); } catch (e) { }
+                }
+
+                // Compute left and clamp to viewport
+                portalMenu.style.left = '0px'; // reset for accurate width
+                const menuWidth = portalMenu.offsetWidth || parseInt(getComputedStyle(portalMenu).minWidth || 0, 10) || 200;
+                let left = viewportLeft;
+                if (left + menuWidth + 8 > window.innerWidth) left = window.innerWidth - menuWidth - 8;
+                if (left < 8) left = 8;
+                portalMenu.style.left = left + 'px';
+
+                // Restore previous max if needed
+                if (!portalMenu.style.maxHeight) portalMenu.style.maxHeight = prevMax || 'calc(100vh - 6rem)';
+            }
+
+            function openPortal() {
+                positionPortal();
+                portalMenu.classList.add('js-open');
+                portalMenu.style.opacity = '1';
+                portalMenu.style.visibility = 'visible';
+                toggleButton.setAttribute('aria-expanded', 'true');
+                items = refreshItems();
+                // Defensive: ensure the top of the menu is visible (reset any scroll carried over)
+                try { portalMenu.scrollTop = 0; } catch (e) { /* ignore */ }
+            }
+
+            function closePortal() {
+                portalMenu.classList.remove('js-open');
+                portalMenu.style.opacity = '0';
+                portalMenu.style.visibility = 'hidden';
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+
+            // Toggle behavior
+            toggleButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (portalMenu.classList.contains('js-open')) closePortal(); else openPortal();
+            });
+            // Also support hover behavior (open on mouseenter, close when mouse leaves portal)
+            let hoverOpenTimer = null;
+            toggleButton.addEventListener('mouseenter', function () {
+                clearTimeout(hoverOpenTimer);
+                hoverOpenTimer = setTimeout(function () { openPortal(); }, 140);
+            });
+            toggleButton.addEventListener('mouseleave', function () {
+                // Close if mouse doesn't enter the portal shortly
+                hoverOpenTimer = setTimeout(function () { if (!portalMenu.matches(':hover')) closePortal(); }, 220);
+            });
+            portalMenu.addEventListener('mouseleave', function () {
+                // close shortly after leaving the portal to mimic previous behavior
+                hoverOpenTimer = setTimeout(function () { closePortal(); }, 180);
+            });
+
+            // Keyboard opener
+            toggleButton.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowDown' || e.key === 'Down') {
+                    e.preventDefault();
+                    openPortal();
+                    items = refreshItems();
+                    if (items.length) items[0].focus();
+                }
+            });
+
+            // Keyboard navigation inside portal
+            portalMenu.addEventListener('keydown', function (e) {
+                items = refreshItems();
+                const idx = items.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown' || e.key === 'Down') {
+                    e.preventDefault();
+                    const next = (idx + 1) % items.length;
+                    items[next].focus();
+                } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+                    e.preventDefault();
+                    const prev = (idx - 1 + items.length) % items.length;
+                    items[prev].focus();
+                } else if (e.key === 'Escape' || e.key === 'Esc') {
+                    closePortal();
+                    toggleButton.focus();
+                }
+            });
+
+            // Close on outside click
+            document.addEventListener('click', function (e) {
+                const target = e.target;
+                const clickedInsideToggle = toggleButton.contains(target);
+                const clickedInsidePortal = portalMenu.contains ? portalMenu.contains(target) : false;
+                if (!clickedInsideToggle && !clickedInsidePortal) {
+                    closePortal();
+                }
+            }, true);
+
+            // Clicking a portal item closes the portal (navigation still proceeds)
+            portalMenu.querySelectorAll('.dropdown-item').forEach(function (it) {
+                it.addEventListener('click', function () { closePortal(); });
+            });
+
+            // Reposition while open
+            window.addEventListener('resize', function () { if (portalMenu.classList.contains('js-open')) positionPortal(); });
+            window.addEventListener('scroll', function () { if (portalMenu.classList.contains('js-open')) positionPortal(); }, true);
+        });
+    </script>
+ </body>
+ </html>
